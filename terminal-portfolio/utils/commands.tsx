@@ -3,6 +3,8 @@ import About from "../components/About";
 import Projects from "../components/Projects";
 import Experience from "../components/Experience";
 import Contact from "../components/Contact";
+import Skills from "../components/Skills";
+import Recommendations from "../components/Recommendations";
 
 export const COMMANDS = [
   "help",
@@ -10,6 +12,7 @@ export const COMMANDS = [
   "skills",
   "projects",
   "experience",
+  "recommendations",
   "contact",
   "clear",
   "neofetch",
@@ -40,15 +43,16 @@ export function runCommand(input: string): CommandOutput {
         type: "text",
         content: `
 Available commands:
-  help        Show this help menu
-  whoami      Who am I
-  about       About me (Interactive)
-  skills      Technical skills
-  projects    My projects
-  contact     Contact info
-  neofetch    System profile
-  ls          List files
-  clear       Clear the terminal
+  help                Show this help menu
+  whoami              Who am I
+  about               About me (Interactive)
+  skills              Technical skills
+  projects            My projects
+  recommendations     Recommendations for friends and collegues
+  contact             Contact info
+  neofetch            System profile
+  ls                  List files
+  clear               Clear the terminal
 `,
       };
 
@@ -66,14 +70,8 @@ Available commands:
 
     case "skills":
       return {
-        type: "text",
-        content: `
-• Networking: Cisco, Juniper, Firewalls, VPNs
-• Backend: Python, Java, Go
-• Web: HTML, CSS, Next.js
-• DevOps: Docker, Git, Ansible
-• Cloud: AWS, Azure, OpenStack
-`,
+        type: "component",
+        content: <Skills />,
       };
 
     // We will upgrade this to a Component in the next step!
@@ -87,6 +85,12 @@ Available commands:
       return {
         type: "component",
         content: <Experience />,
+      };
+    
+    case "recommendations":
+      return {
+        type: "component",
+        content: <Recommendations />,
       };
 
     case "contact":
