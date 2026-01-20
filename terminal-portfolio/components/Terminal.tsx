@@ -31,9 +31,10 @@ const WELCOME_MESSAGE = (
       </div>
       
       <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
-        Welcome to my digital workspace. 
-        Explore my projects and professional journey through this interactive command-line interface.
+       Welcome to my digital workspace. 
+       Explore my projects and professional journey through this interactive command-line interface.
       </p>
+      
       <p className="text-zinc-500 text-xs uppercase tracking-wider">
         Type <span className="text-green-400 font-bold glow-text">help</span> to see available commands
       </p>
@@ -68,11 +69,12 @@ export default function Terminal() {
     }, 10);
   }, [history, lines]);
 
+  // Initial focus only (removed the aggressive auto-focus effect)
   useEffect(() => {
     if (!isBooting) {
       inputRef.current?.focus();
     }
-  }, [history, isBooting]);
+  }, [isBooting]);
 
   useEffect(() => {
     loadSoundPreference();
@@ -94,10 +96,29 @@ export default function Terminal() {
     boot();
   }, []);
 
-  const handleTerminalClick = () => {
+  // --- THE FIX IS HERE ---
+  const handleTerminalClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+
+    // If user clicked on an INPUT, TEXTAREA, BUTTON or LINK, do NOT force focus back to terminal
+    if (
+      target.tagName === "INPUT" || 
+      target.tagName === "TEXTAREA" || 
+      target.tagName === "BUTTON" || 
+      target.tagName === "A" ||
+      target.closest("a") || // Covers SVG icons inside links
+      target.closest("button")
+    ) {
+      return;
+    }
+
+    // Don't focus if user is selecting text to copy
     if (window.getSelection()?.toString()) return;
+
+    // Otherwise, focus the main terminal input
     inputRef.current?.focus();
   };
+  // -----------------------
 
   const typeOutput = (text: string, callback: (val: string) => void) => {
     let index = 0;
@@ -221,12 +242,10 @@ export default function Terminal() {
   };
 
   return (
-    // UPDATED: max-w-7xl for width, min-h-screen for wrapper
     <div 
       className="w-full max-w-7xl mx-auto min-h-screen p-4 md:p-8 flex flex-col justify-center cursor-text"
       onClick={handleTerminalClick}
     >
-      {/* UPDATED: h-[85vh] to force it to be tall on all screens */}
       <div className="bg-black text-green-400 font-mono p-6 md:p-8 rounded-xl shadow-2xl border border-zinc-800 h-[85vh] flex flex-col relative overflow-hidden ring-1 ring-zinc-800/50">
         
         {/* Boot Text */}
