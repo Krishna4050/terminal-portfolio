@@ -4,15 +4,41 @@ const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate sending
     setStatus("sending");
-    setTimeout(() => {
-      setStatus("sent");
-      setForm({ name: "", email: "", message: "" });
-      setTimeout(() => setStatus(""), 3000);
-    }, 1000);
+
+    try {
+      // 1. Send data to FormSubmit.co
+      const response = await fetch("https://formsubmit.co/ajax/demon.cider591@passinbox.com", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          _subject: "New Portfolio Message from " + form.name, // Custom Subject
+          _template: "table" // Makes the email look clean
+        })
+      });
+
+      if (response.ok) {
+        // 2. Success handling
+        setStatus("sent");
+        setForm({ name: "", email: "", message: "" }); // Clear form
+        setTimeout(() => setStatus(""), 5000); // Reset button after 5s
+      } else {
+        setStatus("");
+        alert("Something went wrong. Please try again later.");
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("");
+      alert("Error sending message. Please check your internet connection.");
+    }
   };
 
   return (
