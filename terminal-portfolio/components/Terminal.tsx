@@ -31,8 +31,8 @@ const WELCOME_MESSAGE = (
       </div>
       
       <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
-        Welcome to my interactive portfolio terminal. 
-        This environment is designed to showcase my engineering background.
+        Welcome to my digital workspace. 
+        Explore my projects and professional journey through this interactive command-line interface.
       </p>
       <p className="text-zinc-500 text-xs uppercase tracking-wider">
         Type <span className="text-green-400 font-bold glow-text">help</span> to see available commands
