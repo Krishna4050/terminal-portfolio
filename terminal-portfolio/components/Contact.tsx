@@ -110,8 +110,9 @@ const Contact = () => {
                 </div>
               </a>
 
+
               {/* LinkedIn */}
-              <a href="#" target="_blank" rel="noopener noreferrer" 
+              <a href="https://www.linkedin.com/in/krishna4050" target="_blank" rel="noopener noreferrer" 
                  className="flex items-center gap-4 p-4 rounded-xl bg-black/40 border border-zinc-800 hover:border-green-500/50 hover:bg-zinc-900 transition-all group">
                 <div className="p-3 bg-zinc-800 rounded-lg text-white group-hover:text-green-400 group-hover:bg-zinc-950 transition-colors">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
@@ -122,6 +123,7 @@ const Contact = () => {
                 </div>
               </a>
 
+
               {/* Email */}
               <a href="mailto:krishna@example.com" 
                  className="flex items-center gap-4 p-4 rounded-xl bg-black/40 border border-zinc-800 hover:border-green-500/50 hover:bg-zinc-900 transition-all group">
@@ -131,6 +133,20 @@ const Contact = () => {
                 <div>
                   <h4 className="font-bold text-white group-hover:text-green-400 transition-colors">Email</h4>
                   <p className="text-zinc-500 text-sm">krishna@example.com</p>
+                </div>
+              </a>
+
+              {/* Buy Me a Coffee (NEW) */}
+              <a href="https://buymeacoffee.com/krish_na" target="_blank" rel="noopener noreferrer" 
+                 className="flex items-center gap-4 p-4 rounded-xl bg-yellow-400/10 border border-yellow-400/30 hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all group text-yellow-400">
+                <div className="p-3 bg-yellow-400 rounded-lg text-black transition-colors group-hover:bg-black group-hover:text-yellow-400">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.205 4.791a5.938 5.938 0 0 0-4.209-1.754h-7.92c-.663 0-1.2.537-1.2 1.2v7.357c0 2.507 1.812 4.588 4.195 5.062C11.396 18.232 12.896 19.2 12 19.2c-1.325 0-2.4-.896-2.4-2h-2.4c0 2.429 2.15 4.4 4.8 4.4s4.8-1.971 4.8-4.4c.001-.064.03-.68.04-1.504 2.379-.533 4.16-2.605 4.16-5.096V6.035c0-.451-.295-.862-.795-1.244zM18.8 11.6c0 1.323-.979 2.435-2.25 2.607.01-.194.026-.642.026-1.632V5.437h1.424c.435 0 .8.365.8.8v5.363zM2.4 17.6h7.2v2.4H2.4z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-bold transition-colors">Buy Me a Coffee</h4>
+                  <p className="text-xs opacity-80 uppercase tracking-wide">Support my work</p>
                 </div>
               </a>
               
