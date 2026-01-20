@@ -5,6 +5,8 @@ import Experience from "../components/Experience";
 import Contact from "../components/Contact";
 import Skills from "../components/Skills";
 import Recommendations from "../components/Recommendations";
+import Whoami from "../components/Whoami";
+import Education from "../components/Education";
 
 export const COMMANDS = [
   "help",
@@ -12,10 +14,10 @@ export const COMMANDS = [
   "skills",
   "projects",
   "experience",
+  "education",
   "recommendations",
   "contact",
   "clear",
-  "neofetch",
   "whoami",
   "ls"
 ];
@@ -49,9 +51,9 @@ Available commands:
   skills              Technical skills
   projects            My projects
   experience          My experiences
+  education           My educations
   recommendations     Recommendations from friends and colleagues
   contact             Contact info
-  neofetch            System profile
   ls                  List files
   clear               Clear the terminal
 `,
@@ -59,8 +61,8 @@ Available commands:
 
     case "whoami":
       return {
-        type: "text",
-        content: "krishna@portfolio",
+        type: "component",
+        content: <Whoami />,
       };
 
     case "about":
@@ -86,6 +88,12 @@ Available commands:
       return {
         type: "component",
         content: <Experience />,
+      };
+
+    case "education":
+      return {
+        type: "component",
+        content: <Education />,
       };
     
     case "recommendations":
