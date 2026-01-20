@@ -20,13 +20,15 @@ const Contact = () => {
           name: form.name,
           email: form.email,
           message: form.message,
-          _subject: "New Portfolio Message from " + form.name, // Custom Subject
-          _template: "table" // Makes the email look clean
+          // Controls the email YOU receive
+          _subject: "New Portfolio Message from " + form.name,
+          _template: "table",
+          // Controls the email THEY receive (Auto-Reply)
+          _autoresponse: "Thank you for reaching out! I have received your message and will get back to you as soon as possible. \n\nBest regards,\nKrishna Adhikari"
         })
       });
 
       if (response.ok) {
-        // 2. Success handling
         setStatus("sent");
         setForm({ name: "", email: "", message: "" }); // Clear form
         setTimeout(() => setStatus(""), 5000); // Reset button after 5s
