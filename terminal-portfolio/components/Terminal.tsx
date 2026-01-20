@@ -1,10 +1,35 @@
 "use client";
 
 import { useState, useRef, useEffect, ReactNode } from "react";
-// ✅ RE-ADDED 'COMMANDS' here so we can check for matches
 import { runCommand, COMMANDS, CommandOutput } from "../utils/commands";
 import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";
 import { runBootSequence } from "@/utils/bootSequence";
+
+// 1. Define the Welcome Banner here so we can reuse it!
+const WELCOME_MESSAGE = (
+  <div className="mb-6">
+    <pre className="text-[10px] sm:text-xs md:text-sm font-bold text-green-500 leading-none mb-4 select-none">
+{`
+  _  __     _     _                      
+ | |/ /    (_)   | |                     
+ | ' / _ __ _ ___| |__  _ __   __ _      
+ |  < | '__| / __| '_ \\| '_ \\ / _\` |     
+ | . \\| |  | \\__ \\ | | | | | | (_| |     
+ |_|\\_\\_|  |_|___/_| |_|_| |_|\\__,_|     
+`}
+    </pre>
+    <div className="border border-green-500/30 bg-green-500/5 p-4 rounded-lg max-w-lg">
+      <p className="text-white font-bold mb-2">SYSTEM READY v1.0.0</p>
+      <p className="text-zinc-400 text-sm mb-2">
+        Welcome to my interactive portfolio terminal. 
+        This environment is designed to showcase my engineering background.
+      </p>
+      <p className="text-zinc-500 text-xs">
+        Type <span className="text-green-400 font-bold">help</span> to see available commands.
+      </p>
+    </div>
+  </div>
+);
 
 type HistoryItem = {
   command: string;
@@ -19,7 +44,6 @@ export default function Terminal() {
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   
-  // ✅ ADDED THESE BACK for Tab Completion
   const [tabMatches, setTabMatches] = useState<string[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -34,12 +58,19 @@ export default function Terminal() {
     loadSoundPreference();
   }, []);
 
+  // 2. Updated Boot Sequence
   useEffect(() => {
     async function boot() {
       await runBootSequence((line) => {
         setLines((prev) => [...prev, line]);
       });
-      setLines((prev) => [...prev, "", "Welcome to Krishna’s Terminal.", "Type 'help' to start."]);
+      
+      // Clear boot text and show Welcome Message
+      setLines([]); 
+      setHistory([
+        { command: "", type: "component", output: WELCOME_MESSAGE }
+      ]);
+      
       setIsBooting(false);
     }
     boot();
@@ -59,15 +90,18 @@ export default function Terminal() {
   const handleCommand = () => {
     if (!input.trim()) return;
 
-    const command = input.trim(); // Trim extra spaces
+    const command = input.trim();
     const result: CommandOutput = runCommand(command);
 
     setCommandHistory((prev) => [...prev, command]);
     setHistoryIndex(null);
-    setTabMatches([]); // Reset tab state on submit
+    setTabMatches([]);
 
+    // 3. UPDATED CLEAR LOGIC: Reset to Welcome Message
     if (result.type === "clear") {
-      setHistory([]);
+      setHistory([
+        { command: "", type: "component", output: WELCOME_MESSAGE }
+      ]);
       setInput("");
       return;
     }
@@ -81,6 +115,7 @@ export default function Terminal() {
       return;
     }
 
+    // Text Output Logic
     setHistory((prev) => [
       ...prev,
       { command, type: "text", output: "" },
@@ -102,41 +137,28 @@ export default function Terminal() {
     setInput("");
   };
 
-  // ✅ THE KEYDOWN LOGIC (Includes Tab + Arrows)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    
-    // 1. ENTER KEY
     if (e.key === "Enter") {
       playEnterSound();
       handleCommand();
       return;
     }
 
-    // 2. TAB KEY (Auto-complete)
     if (e.key === "Tab") {
       e.preventDefault();
-
       if (!input) return;
 
-      // Find all commands that start with current input
-      // If we are already cycling matches, stick to the original search term
-      //const searchBase = tabMatches.length > 0 ? tabMatches[0].substring(0, input.length) : input.toLowerCase();
-      
       let matches = tabMatches;
       if (matches.length === 0) {
         matches = COMMANDS.filter((cmd) => cmd.startsWith(input.toLowerCase()));
       }
-
       if (matches.length === 0) return;
 
-      // Cycle through matches
       if (tabMatches.length === 0) {
-        // First Press: Init matches
         setTabMatches(matches);
         setTabIndex(0);
         setInput(matches[0]);
       } else {
-        // Subsequent Presses: Cycle next
         const nextIndex = (tabIndex + 1) % matches.length;
         setTabIndex(nextIndex);
         setInput(matches[nextIndex]);
@@ -144,13 +166,11 @@ export default function Terminal() {
       return;
     }
 
-    // Reset Tab logic if user types something else
     if (e.key !== "Tab" && e.key !== "Shift" && e.key !== "Control" && e.key !== "Alt") {
       setTabMatches([]);
       setTabIndex(0);
     }
 
-    // 3. ARROW UP (History Back)
     if (e.key === "ArrowUp") {
       e.preventDefault();
       if (commandHistory.length === 0) return;
@@ -161,7 +181,6 @@ export default function Terminal() {
       return;
     }
 
-    // 4. ARROW DOWN (History Forward)
     if (e.key === "ArrowDown") {
       e.preventDefault();
       if (historyIndex === null) return;
@@ -177,7 +196,6 @@ export default function Terminal() {
       return;
     }
 
-    // Play sound for normal keys
     playKeySound();
   };
 
@@ -185,19 +203,22 @@ export default function Terminal() {
     <div className="w-full max-w-4xl mx-auto">
       <div className="bg-black text-green-400 font-mono p-4 rounded-lg shadow-lg min-h-150 flex flex-col">
         
-        {/* Boot Sequence */}
+        {/* Boot Text (only visible during boot) */}
         <div className="mb-2 space-y-1 whitespace-pre-wrap">
           {lines.map((line, i) => <div key={i}>{line}</div>)}
         </div>
 
-        {/* History */}
+        {/* Output History */}
         <div className="space-y-2">
           {history.map((item, index) => (
             <div key={index}>
-              <div className="flex items-center">
-                <span className="mr-2 text-green-500">$</span>
-                <span className="text-white">{item.command}</span>
-              </div>
+              {/* Only show the typed command if it is NOT empty (Welcome message has empty command) */}
+              {item.command && (
+                <div className="flex items-center">
+                  <span className="mr-2 text-green-500">$</span>
+                  <span className="text-white">{item.command}</span>
+                </div>
+              )}
               
               {item.type === "component" ? (
                 <div className="animate-fade-in-up mt-2">
@@ -213,7 +234,7 @@ export default function Terminal() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input Area */}
+        {/* Input Line */}
         <div className="flex items-center mt-2">
           <span className="mr-2 text-green-500">$</span>
           <input

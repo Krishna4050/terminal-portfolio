@@ -7,6 +7,7 @@ import Skills from "../components/Skills";
 import Recommendations from "../components/Recommendations";
 import Whoami from "../components/Whoami";
 import Education from "../components/Education";
+import Help from "../components/Help";
 
 export const COMMANDS = [
   "help",
@@ -42,21 +43,8 @@ export function runCommand(input: string): CommandOutput {
   switch (command) {
     case "help":
       return {
-        type: "text",
-        content: `
-Available commands:
-  help                Show this help menu
-  whoami              Who am I
-  about               About me (Interactive)
-  skills              Technical skills
-  projects            My projects
-  experience          My experiences
-  education           My educations
-  recommendations     Recommendations from friends and colleagues
-  contact             Contact info
-  ls                  List files
-  clear               Clear the terminal
-`,
+        type: "component",
+        content: <Help />,
       };
 
     case "whoami":
