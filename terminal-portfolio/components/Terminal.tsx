@@ -5,10 +5,11 @@ import { runCommand, COMMANDS, CommandOutput } from "../utils/commands";
 import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";
 import { runBootSequence } from "@/utils/bootSequence";
 
-// 1. Define the Welcome Banner here so we can reuse it!
+// 1. Define the Centered Welcome Banner
 const WELCOME_MESSAGE = (
-  <div className="mb-6">
-    <pre className="text-[10px] sm:text-xs md:text-sm font-bold text-green-500 leading-none mb-4 select-none">
+  <div className="my-10 flex flex-col items-center justify-center text-center w-full">
+    {/* ASCII Art - Centered */}
+    <pre className="text-[10px] sm:text-xs md:text-sm font-bold text-green-500 leading-none mb-8 select-none whitespace-pre">
 {`
   _  __     _     _                      
  | |/ /    (_)   | |                     
@@ -18,14 +19,23 @@ const WELCOME_MESSAGE = (
  |_|\\_\\_|  |_|___/_| |_|_| |_|\\__,_|     
 `}
     </pre>
-    <div className="border border-green-500/30 bg-green-500/5 p-4 rounded-lg max-w-lg">
-      <p className="text-white font-bold mb-2">SYSTEM READY v1.0.0</p>
-      <p className="text-zinc-400 text-sm mb-2">
+
+    {/* Info Box - Centered */}
+    <div className="border border-green-500/30 bg-green-500/5 p-6 rounded-lg max-w-lg w-full shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+        </span>
+        <p className="text-white font-bold tracking-widest text-sm">SYSTEM READY v1.0.0</p>
+      </div>
+      
+      <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
         Welcome to my interactive portfolio terminal. 
         This environment is designed to showcase my engineering background.
       </p>
-      <p className="text-zinc-500 text-xs">
-        Type <span className="text-green-400 font-bold">help</span> to see available commands.
+      <p className="text-zinc-500 text-xs uppercase tracking-wider">
+        Type <span className="text-green-400 font-bold glow-text">help</span> to see available commands
       </p>
     </div>
   </div>
@@ -42,7 +52,9 @@ export default function Terminal() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
+  
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   
   const [tabMatches, setTabMatches] = useState<string[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
@@ -51,21 +63,27 @@ export default function Terminal() {
   const [lines, setLines] = useState<string[]>([]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 10);
   }, [history, lines]);
+
+  useEffect(() => {
+    if (!isBooting) {
+      inputRef.current?.focus();
+    }
+  }, [history, isBooting]);
 
   useEffect(() => {
     loadSoundPreference();
   }, []);
 
-  // 2. Updated Boot Sequence
   useEffect(() => {
     async function boot() {
       await runBootSequence((line) => {
         setLines((prev) => [...prev, line]);
       });
       
-      // Clear boot text and show Welcome Message
       setLines([]); 
       setHistory([
         { command: "", type: "component", output: WELCOME_MESSAGE }
@@ -75,6 +93,11 @@ export default function Terminal() {
     }
     boot();
   }, []);
+
+  const handleTerminalClick = () => {
+    if (window.getSelection()?.toString()) return;
+    inputRef.current?.focus();
+  };
 
   const typeOutput = (text: string, callback: (val: string) => void) => {
     let index = 0;
@@ -97,7 +120,6 @@ export default function Terminal() {
     setHistoryIndex(null);
     setTabMatches([]);
 
-    // 3. UPDATED CLEAR LOGIC: Reset to Welcome Message
     if (result.type === "clear") {
       setHistory([
         { command: "", type: "component", output: WELCOME_MESSAGE }
@@ -115,7 +137,6 @@ export default function Terminal() {
       return;
     }
 
-    // Text Output Logic
     setHistory((prev) => [
       ...prev,
       { command, type: "text", output: "" },
@@ -200,32 +221,36 @@ export default function Terminal() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-black text-green-400 font-mono p-4 rounded-lg shadow-lg min-h-150 flex flex-col">
+    // UPDATED: max-w-7xl for width, min-h-screen for wrapper
+    <div 
+      className="w-full max-w-7xl mx-auto min-h-screen p-4 md:p-8 flex flex-col justify-center cursor-text"
+      onClick={handleTerminalClick}
+    >
+      {/* UPDATED: h-[85vh] to force it to be tall on all screens */}
+      <div className="bg-black text-green-400 font-mono p-6 md:p-8 rounded-xl shadow-2xl border border-zinc-800 h-[85vh] flex flex-col relative overflow-hidden ring-1 ring-zinc-800/50">
         
-        {/* Boot Text (only visible during boot) */}
-        <div className="mb-2 space-y-1 whitespace-pre-wrap">
+        {/* Boot Text */}
+        <div className="mb-2 space-y-1 whitespace-pre-wrap shrink-0">
           {lines.map((line, i) => <div key={i}>{line}</div>)}
         </div>
 
-        {/* Output History */}
-        <div className="space-y-2">
+        {/* Output History - Scrollable Area */}
+        <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
           {history.map((item, index) => (
-            <div key={index}>
-              {/* Only show the typed command if it is NOT empty (Welcome message has empty command) */}
+            <div key={index} className="wrap-break-words">
               {item.command && (
-                <div className="flex items-center">
-                  <span className="mr-2 text-green-500">$</span>
-                  <span className="text-white">{item.command}</span>
+                <div className="flex items-center mb-1">
+                  <span className="mr-3 text-green-500 font-bold">$</span>
+                  <span className="text-white font-bold">{item.command}</span>
                 </div>
               )}
               
               {item.type === "component" ? (
-                <div className="animate-fade-in-up mt-2">
+                <div className="animate-fade-in-up my-4">
                   {item.output}
                 </div>
               ) : (
-                <div className="whitespace-pre-wrap text-green-300">
+                <div className="whitespace-pre-wrap text-green-300 leading-relaxed">
                   {item.output as string}
                 </div>
               )}
@@ -234,17 +259,20 @@ export default function Terminal() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input Line */}
-        <div className="flex items-center mt-2">
-          <span className="mr-2 text-green-500">$</span>
+        {/* Input Line - Fixed at bottom of container */}
+        <div className="flex items-center mt-4 pt-4 border-t border-zinc-900 shrink-0">
+          <span className="mr-3 text-green-500 font-bold text-lg">$</span>
           <input
+            ref={inputRef}
             disabled={isBooting}
-            className={`flex-1 bg-black outline-none text-green-400 caret-green-400 ${isBooting ? "opacity-50" : ""}`}
+            className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             autoFocus
+            autoComplete="off"
+            spellCheck="false"
           />
         </div>
       </div>
