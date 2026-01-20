@@ -48,7 +48,8 @@ Available commands:
   about               About me (Interactive)
   skills              Technical skills
   projects            My projects
-  recommendations     Recommendations for friends and collegues
+  experience          My experiences
+  recommendations     Recommendations from friends and colleagues
   contact             Contact info
   neofetch            System profile
   ls                  List files
