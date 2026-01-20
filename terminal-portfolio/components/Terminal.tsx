@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { runCommand, COMMANDS } from "../utils/commands";
 import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";
+import { runBootSequence } from "@/utils/bootSequence";
 
 
 
@@ -21,6 +22,9 @@ export default function Terminal() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [tabMatches, setTabMatches] = useState<string[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
+  const [lines, setLines] = useState<string[]>([]);
+  const [isBooting, setIsBooting] = useState(true);
+
 
 
   useEffect(() => {
@@ -31,6 +35,30 @@ useEffect(() => {
   loadSoundPreference();
 }, []);
 
+useEffect(() => {
+  async function boot() {
+    await runBootSequence((line) => {
+      setLines((prev) => [...prev, line]);
+    });
+
+    // Stable welcome message (never removed)
+    setLines((prev) => [
+      ...prev,
+      "",
+      "Welcome to Krishna’s Terminal Portfolio",
+      "Type 'help' to get started."
+    ]);
+
+    setIsBooting(false);
+  }
+
+  boot();
+}, []);
+
+const welcomeLines = [
+  "Welcome to Krishna’s Terminal Portfolio",
+  "Type 'help' to get started."
+];
 
 
 const typeOutput = (
@@ -64,11 +92,14 @@ const typeOutput = (
   setHistoryIndex(null);
 
   // CLEAR COMMAND
-  if (result === "__CLEAR__") {
-    setHistory([]);
-    setInput("");
-    return;
-  }
+  if (command === "clear") {
+  setHistory([]);
+  setLines([...welcomeLines]);
+  setInput("");
+  return;
+}
+
+
 
   // Add command immediately with empty output
   setHistory((prev) => [
@@ -127,8 +158,15 @@ const typeOutput = (
         <div className="flex items-center">
           <span className="mr-2">$</span>
           <input
+          disabled={isBooting}
+          className={`flex-1 bg-black outline-none text-green-400 caret-green-400 terminal-input ${
+            isBooting ? "opacity-50" : ""
+          }`}
+
+          placeholder={isBooting ? "Booting..." : ""}  
+   
             type="text"
-            className="flex-1 bg-black outline-none text-green-400 caret-green-400"
+            // className="flex-1 bg-black outline-none text-green-400 caret-green-400"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -168,12 +206,6 @@ const typeOutput = (
                 setTabMatches([]);
                 setTabIndex(0);
               }
-
-
-              if (e.key === "Enter") {
-                handleCommand();
-              }
-
               if (e.key === "ArrowUp") {
                 e.preventDefault();
                 if (commandHistory.length === 0) return;
