@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const About = () => {
   return (
@@ -11,7 +12,16 @@ const About = () => {
           <div className="relative w-32 h-32 md:w-40 md:h-40">
             <div className="absolute inset-0 bg-linear-to-tr from-green-500 to-blue-500 rounded-full blur-md opacity-75 animate-pulse"></div>
             <div className="relative w-full h-full bg-zinc-800 rounded-full flex items-center justify-center overflow-hidden border-2 border-zinc-700 shadow-xl">
-              <span className="text-5xl">👨‍💻</span>
+              
+              {/* REPLACED EMOJI WITH IMAGE COMPONENT */}
+              <Image 
+                src="/me.jpg" 
+                alt="Krishna Adhikari"
+                fill
+                className="object-cover"
+                priority
+              />
+              
             </div>
           </div>
           
@@ -66,7 +76,7 @@ const About = () => {
                Instagram
             </a>
             {/* YouTube - Replace # with your link */}
-            <a href="https://youtube.com/@@MNSKB" target="_blank" rel="noopener noreferrer" 
+            <a href="https://youtube.com/@MNSKB" target="_blank" rel="noopener noreferrer" 
                className="px-5 py-2.5 bg-zinc-800 hover:bg-red-900/30 hover:border-red-500/50 text-white font-medium text-sm rounded-lg border border-zinc-700 transition-all hover:-translate-y-0.5 shadow-lg flex items-center gap-2 group">
                <svg className="w-5 h-5 group-hover:text-red-500 transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
                YouTube
