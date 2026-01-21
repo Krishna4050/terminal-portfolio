@@ -31,8 +31,8 @@ const WELCOME_MESSAGE = (
       </div>
       
       <p className="text-zinc-400 text-sm mb-4 leading-relaxed">
-       Welcome to my digital workspace. 
-       Explore my projects and professional journey through this interactive command-line interface.
+        Welcome to my digital workspace.
+        Explore my projects and professional journey through this interactive command-line interface.
       </p>
       
       <p className="text-zinc-500 text-xs uppercase tracking-wider">
@@ -69,9 +69,9 @@ export default function Terminal() {
     }, 10);
   }, [history, lines]);
 
-  // Initial focus only (removed the aggressive auto-focus effect)
+  // MOBILE FIX 1: Only auto-focus if screen is wide (Desktop)
   useEffect(() => {
-    if (!isBooting) {
+    if (!isBooting && window.innerWidth > 768) {
       inputRef.current?.focus();
     }
   }, [isBooting]);
@@ -96,29 +96,28 @@ export default function Terminal() {
     boot();
   }, []);
 
-  // --- THE FIX IS HERE ---
   const handleTerminalClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // MOBILE FIX 2: If on mobile, don't force focus when clicking background
+    // This allows users to scroll without the keyboard popping up
+    if (window.innerWidth < 768) return;
+
     const target = e.target as HTMLElement;
 
-    // If user clicked on an INPUT, TEXTAREA, BUTTON or LINK, do NOT force focus back to terminal
     if (
       target.tagName === "INPUT" || 
       target.tagName === "TEXTAREA" || 
       target.tagName === "BUTTON" || 
       target.tagName === "A" ||
-      target.closest("a") || // Covers SVG icons inside links
+      target.closest("a") || 
       target.closest("button")
     ) {
       return;
     }
 
-    // Don't focus if user is selecting text to copy
     if (window.getSelection()?.toString()) return;
 
-    // Otherwise, focus the main terminal input
     inputRef.current?.focus();
   };
-  // -----------------------
 
   const typeOutput = (text: string, callback: (val: string) => void) => {
     let index = 0;
@@ -140,6 +139,11 @@ export default function Terminal() {
     setCommandHistory((prev) => [...prev, command]);
     setHistoryIndex(null);
     setTabMatches([]);
+
+    // MOBILE FIX 3: Close keyboard after submitting a command
+    if (window.innerWidth < 768) {
+      inputRef.current?.blur();
+    }
 
     if (result.type === "clear") {
       setHistory([
@@ -278,18 +282,18 @@ export default function Terminal() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input Line - Fixed at bottom of container */}
+        {/* Input Line */}
         <div className="flex items-center mt-4 pt-4 border-t border-zinc-900 shrink-0">
           <span className="mr-3 text-green-500 font-bold text-lg">$</span>
           <input
             ref={inputRef}
             disabled={isBooting}
+            // MOBILE FIX 4: Removed autoFocus attribute (handled via useEffect now)
             className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            autoFocus
             autoComplete="off"
             spellCheck="false"
           />
