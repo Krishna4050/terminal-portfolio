@@ -60,7 +60,7 @@ export const projects: Project[] = [
     techStack: [
       { category: "Hardware", items: ["Cisco Catalyst 9300", "Fortinet FortiGate 200F"] },
       { category: "Protocols", items: ["OSPF", "BGP", "HSRP / VRRP", "LACP", "802.1Q"] },
-      { category: "Tools", items: ["AutoCAD", "Wireshark", "PuTTY", "Python"] }
+      { category: "Tools", items: ["AutoCAD", "draw.io", "Wireshark", "PuTTY", "Python"] }
     ],
     outcomes: [
       { value: "50%", label: "Traffic Increase Handled", color: "text-green-400" },
