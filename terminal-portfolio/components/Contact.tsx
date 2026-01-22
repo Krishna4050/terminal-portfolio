@@ -160,7 +160,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-white group-hover:text-green-400 transition-colors">Email</h4>
-                  <p className="text-zinc-500 text-sm">krishna@example.com</p>
+                  <p className="text-zinc-500 text-sm">demon.cider591@passinbox.com</p>
                 </div>
               </a>
 
