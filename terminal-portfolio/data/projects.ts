@@ -14,11 +14,65 @@ export type Project = {
   outcomes: { value: string; label: string; color: string }[];
   diagram?: string;
   outcomeDesc?: string;
+
+  // 👇 NEW: Optional Heading Overrides
+  headingChallenge?: string;       // Default: "The Challenge"
+  headingSolution?: string;        // Default: "The Solution"
+  headingImplementations?: string; // Default: "Key Implementations"
 };
 
 export const projects: Project[] = [
+  
+    // NEW PROJECT WITH CUSTOM HEADINGS 
   {
     id: 1,
+    title: "Cars Viewer: Go (Golang), Node.js, JavaScript, HTML/CSS",
+    role: "Study Project | kood/Sisu",
+    tags: ["Go (Golang)", "JavaScript", "API Integration", "Web Server"],
+    shortDesc: "A full-stack web application that allows users to browse and compare car models. I built a Go backend to securely fetch data from an external Node.js API and serve it to a custom-built frontend.",
+    overview: "I built the Cars Viewer to create a seamless way for users to explore vehicle data. The goal was to build a stable and fast application that pulls information from an external source (API) and presents it in a clean, easy-to-read format.",
+    
+    // MAPPING "What I Learned" to the Challenge Section (List format)
+    headingChallenge: "📚 What I Learned", // <--- CUSTOM HEADING
+    challengeIntro: "This project was a deep dive into building professional software:",
+    challengePoints: [
+      "How to build a web server using Go.",
+      "How to connect a backend to a separate API service.",
+      "Using JavaScript to create dynamic features like Modals and Comparisons.",
+      "Structuring a professional software project with clean code organization."
+    ],
+
+    // MAPPING "How It Works" to the Solution Section (Paragraph format)
+    headingSolution: "⚙️ How It Works", // <--- CUSTOM HEADING
+    solution: "This project uses a Client-Server architecture. The Backend (Go) acts as a secure bridge that connects to an external API to fetch raw data. The Frontend (JavaScript) asks my Go server for specific data and instantly updates the screen, making the experience feel very fast and smooth.",
+
+    // MAPPING "Key Features" to Implementations (Grid format)
+    headingImplementations: "🔥 Key Features", // <--- CUSTOM HEADING
+    implementations: [
+      { title: "Smart Search", desc: "Users can instantly filter cars by typing a name or selecting a manufacturer.", icon: "🔍" },
+      { title: "Compare Mode", desc: "Select up to three different cars to compare their features side-by-side.", icon: "⚖️" },
+      { title: "Instant Details", desc: "Clicking on a car opens a pop-up window with engine specs and horsepower without reloading.", icon: "⚡" }
+    ],
+
+    diagram: "/viewer.png",
+
+    techStack: [
+      { category: "Backend", items: ["Go (Golang)"] },
+      { category: "Frontend", items: ["HTML, CSS, JavaScript"] },
+      { category: "Data Source", items: ["External Node.js API"] },
+      { category: "Tools", items: ["Git, VS Code"] }
+    ],
+    
+    // Outcomes (Generic stats since none provided, or remove if not needed)
+    outcomes: [
+      { value: "Fast", label: "Response Time", color: "text-green-400" },
+      { value: "Dynamic", label: "User Interface", color: "text-blue-400" },
+      { value: "Stable", label: "Go Server", color: "text-purple-400" }
+    ],
+    outcomeDesc: "The application successfully bridges the gap between raw data and user experience, providing a responsive interface that handles data fetching efficiently."
+    },
+    {
+    id: 2,
     title: "Enterprise Network Redesign for Reliability and Security",
     role: "Network Architect", 
     tags: ["Cisco", "Fortinet", "Network Design", "Security"],
@@ -71,7 +125,7 @@ export const projects: Project[] = [
     outcomeDesc: "The project was delivered on time and within budget. After the upgrade: The client successfully rolled out a new VoIP system. The network handled a 50% increase in user traffic over the next year. No major performance or availability issues were reported."
   },
   {
-    id: 2,
+    id: 3,
     title: "Strengthening Enterprise Security with NGFW Migration",
     role: "Security Engineer",
     tags: ["Fortinet & Palo Alto", "Sophos Endpoint", "SSL-VPN", "Cybersecurity"],
@@ -125,5 +179,7 @@ export const projects: Project[] = [
     ],
     
     outcomeDesc: "TMalware threats blocked before reaching internal systems. Full visibility into Layer 7 application traffic. Stable and secure remote access for sales and remote teams"
-  }
+  },
+
+  
 ];

@@ -90,9 +90,12 @@ const Projects = () => {
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-6 md:p-8">
               
-              {/* 1. NEW OVERVIEW SECTION (FULL WIDTH) */}
+              {/* Overview */}
               <div className="mb-8 border-b border-zinc-800 pb-8">
-                <h3 className="text-lg font-bold text-white mb-2">Overview</h3>
+                <h3 className="text-lg font-bold text-white mb-2">
+                   {/* If you wanted a custom heading for Overview you could add it here too, but "Overview" is usually standard */}
+                   Project Overview
+                </h3>
                 <p className="text-zinc-400 leading-relaxed text-sm md:text-base">
                   {selectedProject.overview}
                 </p>
@@ -103,14 +106,24 @@ const Projects = () => {
                 {/* LEFT COLUMN */}
                 <div className="lg:col-span-2 space-y-8">
                   
-                  {/* 2. CHALLENGE SECTION (WITH BULLETS) */}
+                  {/* DYNAMIC HEADING 1: Default is "The Challenge" */}
                   <div>
                     <h3 className="text-lg font-bold text-red-400 mb-3 flex items-center gap-2">
-                      <span className="text-xl">⚡</span> The Challenge
+                      {selectedProject.headingChallenge ? (
+                         // If custom heading exists, show it (e.g. "What I Learned")
+                         <span>{selectedProject.headingChallenge}</span>
+                      ) : (
+                         // Default Heading
+                         <><span className="text-xl">⚡</span> The Challenge</>
+                      )}
                     </h3>
-                    <p className="text-zinc-400 leading-relaxed text-sm md:text-base mb-3">
-                      {selectedProject.challengeIntro}
-                    </p>
+                    
+                    {selectedProject.challengeIntro && (
+                      <p className="text-zinc-400 leading-relaxed text-sm md:text-base mb-3">
+                        {selectedProject.challengeIntro}
+                      </p>
+                    )}
+                    
                     <ul className="list-disc list-outside ml-5 space-y-2 text-zinc-400 text-sm md:text-base">
                       {selectedProject.challengePoints.map((point, i) => (
                         <li key={i}>{point}</li>
@@ -118,17 +131,25 @@ const Projects = () => {
                     </ul>
                   </div>
 
+                  {/* DYNAMIC HEADING 2: Default is "The Solution" */}
                   <div>
                     <h3 className="text-lg font-bold text-yellow-400 mb-3 flex items-center gap-2">
-                      <span className="text-xl">💡</span> The Solution
+                      {selectedProject.headingSolution ? (
+                         <span>{selectedProject.headingSolution}</span>
+                      ) : (
+                         <><span className="text-xl">💡</span> The Solution</>
+                      )}
                     </h3>
                     <p className="text-zinc-400 leading-relaxed text-sm md:text-base">
                       {selectedProject.solution}
                     </p>
                   </div>
 
+                  {/* DYNAMIC HEADING 3: Default is "Key Implementations" */}
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-4">Key Implementations</h3>
+                    <h3 className="text-lg font-bold text-white mb-4">
+                      {selectedProject.headingImplementations || "Key Implementations"}
+                    </h3>
                     <div className="grid gap-4">
                       {selectedProject.implementations.map((imp, i) => (
                         <div key={i} className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/50 flex gap-4">
@@ -142,17 +163,15 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  {/* Architecture Diagram Section */}
+                  {/* Architecture Diagram */}
                   {selectedProject.diagram && (
                     <div className="mt-8">
                       <h3 className="text-lg font-bold text-white mb-4">Architecture Diagram</h3>
-                      {/* Image Container - Changed aspect ratio to be more flexible */}
                       <div className="relative w-full h-64 md:h-80 lg:h-96 bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden shadow-lg flex items-center justify-center">
                          <Image 
                            src={selectedProject.diagram}
                            alt={`${selectedProject.title} Architecture`}
                            fill
-                           // 👇👇👇 CHANGE IS HERE: replaced object-cover with object-contain 👇👇👇
                            className="object-contain p-2 hover:scale-105 transition-transform duration-500"
                          />
                       </div>
@@ -184,7 +203,7 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  {/* 3. RESULT SECTION */}
+                  {/* Result/Outcome Section */}
                   <div>
                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Result</h4>
                     <div className="grid grid-cols-1 gap-3">
