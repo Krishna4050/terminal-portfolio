@@ -177,8 +177,8 @@ export const projects: Project[] = [
       { value: "Layer 7", label: "Traffic Visibility", color: "text-blue-400" },
       { value: "Secure", label: "Remote Access", color: "text-orange-400" }
     ],
-    
-    outcomeDesc: "TMalware threats blocked before reaching internal systems. Full visibility into Layer 7 application traffic. Stable and secure remote access for sales and remote teams"
+
+    outcomeDesc: "The malware threats blocked before reaching internal systems. Full visibility into Layer 7 application traffic. Stable and secure remote access for sales and remote teams"
   },
 
   

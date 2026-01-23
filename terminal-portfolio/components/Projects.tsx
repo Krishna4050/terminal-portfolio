@@ -176,7 +176,7 @@ const Projects = () => {
                          />
                       </div>
                       <p className="text-xs text-zinc-500 mt-3 italic text-center font-mono">
-                        Figure 1.0: High-Level Schematic of the implemented Architecture.
+                      {  /* Figure 1.0: High-Level Schematic of the implemented Architecture. */ }
                       </p>
                     </div>
                   )}
