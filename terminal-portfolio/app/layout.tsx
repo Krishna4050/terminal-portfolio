@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Krishna Adhikari | Backend Developer (Go) | Solution Architect | Network & System Administration",
     description: "Explore the professional journey and projects of Krishna Adhikari.",
-    url: "https://krishnaadhikari.com", // <--- REPLACE with your actual Vercel link
+    url: "https://krishnaadhikari.com", // 
     siteName: "Krishna Adhikari",
     images: [
       {

@@ -2,10 +2,11 @@
 
 import { supabase } from "@/utils/supabase";
 import { Resend } from "resend";
+import WelcomeEmail from "@/components/emails/WelcomeEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
-const FROM_EMAIL = "send@krishnaadhikari.com"; 
+const FROM_EMAIL = "Krishna Portfolio <no-reply@krishnaadhikari.com>"; 
 
 export async function submitTestimonial(formData: FormData) {
   const name = formData.get("name") as string;
@@ -48,23 +49,16 @@ export async function submitTestimonial(formData: FormData) {
 
   // 3. Send Email to USER (Confirmation)
   try {
-    await resend.emails.send({
-      from: FROM_EMAIL,
-      to: email, // Send to the user's provided email
-      subject: "Thanks for your recommendation!",
-      html: `
-        <div style="font-family: sans-serif; color: #333;">
-          <h2>Hi ${name},</h2>
-          <p>Thank you so much for taking the time to write a recommendation for my portfolio.</p>
-          <p>I have received your message:</p>
-          <blockquote style="background: #f9f9f9; padding: 10px; border-left: 4px solid #4ade80;">
-            "${message}"
-          </blockquote>
-          <p>Once I review and approve it, it will appear live on my terminal interface.</p>
-          <p>Best regards,<br/>Krishna Adhikari</p>
-        </div>
-      `,
-    });
+      await resend.emails.send({
+        from: 'Krishna Portfolio <no-reply@krishnaadhikari.com>',
+        to: email,
+        subject: "Thanks for your recommendation!",
+        // 👇 Pass the 'message' variable here
+        react: WelcomeEmail({ 
+          name: name, 
+          message: message 
+        }) 
+      });
 
     // 4. Send Email to ADMIN (You)
     await resend.emails.send({
