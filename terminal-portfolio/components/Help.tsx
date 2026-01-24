@@ -38,7 +38,7 @@ const commands = [
     icon: "🛠️"
   },
   { 
-    cmd: "recommendations", 
+    cmd: "testimonials", 
     desc: "Testimonials & feedback", 
     alias: "rec",
     icon: "💬"
@@ -49,6 +49,7 @@ const commands = [
     alias: "email",
     icon: "📫"
   },
+  
 ];
 
 const utilityCommands = [

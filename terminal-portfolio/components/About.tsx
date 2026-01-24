@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import FeaturedTestimonials from "./FeaturedTestimonials";
 
 const About = () => {
   return (
@@ -95,6 +96,7 @@ const About = () => {
                <span className="text-lg">→</span>
             </a> */}
           </div>
+          <FeaturedTestimonials />
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import Recommendations from "../components/Recommendations";
 import Whoami from "../components/Whoami";
 import Education from "../components/Education";
 import Help from "../components/Help";
+import TestimonialsOutput from "@/components/TestimonialsOutput";
 
 export const COMMANDS = [
   "help",
@@ -18,6 +19,7 @@ export const COMMANDS = [
   "education",
   "recommendations",
   "contact",
+  "testimonials",
   "clear",
   "whoami",
   "ls"
@@ -65,7 +67,7 @@ export function runCommand(input: string): CommandOutput {
         content: <Skills />,
       };
 
-    // We will upgrade this to a Component in the next step!
+    
     case "projects":
       return {
         type: "component",
@@ -130,6 +132,12 @@ contact.txt
       return {
         type: "clear",
         content: "",
+      };
+
+    case "testimonials":
+      return {
+        type: "component",
+        content: <TestimonialsOutput />,
       };
 
     default:
