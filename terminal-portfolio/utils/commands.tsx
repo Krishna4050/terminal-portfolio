@@ -9,6 +9,7 @@ import Whoami from "../components/Whoami";
 import Education from "../components/Education";
 import Help from "../components/Help";
 import TestimonialsOutput from "@/components/TestimonialsOutput";
+import TraceOutput from "@/components/TraceOutput";
 
 export const COMMANDS = [
   "help",
@@ -138,6 +139,12 @@ contact.txt
       return {
         type: "component",
         content: <TestimonialsOutput />,
+      };
+
+    case "trace":
+      return {
+        type: "component",
+        content: <TraceOutput />,
       };
 
     default:

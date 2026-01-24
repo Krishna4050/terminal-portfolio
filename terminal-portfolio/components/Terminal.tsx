@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, ReactNode } from "react";
 import { runCommand, COMMANDS, CommandOutput } from "../utils/commands";
 import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";
 import { runBootSequence } from "@/utils/bootSequence";
+import { logVisit } from "@/app/actions";
 
 // 1. Define the Centered Welcome Banner
 const WELCOME_MESSAGE = (
@@ -68,6 +69,11 @@ export default function Terminal() {
       bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }, 10);
   }, [history, lines]);
+
+  useEffect(() => {
+    // Fire and forget - we don't need to wait for the result
+    logVisit();
+  }, []);
 
   // MOBILE FIX 1: Only auto-focus if screen is wide (Desktop)
   useEffect(() => {

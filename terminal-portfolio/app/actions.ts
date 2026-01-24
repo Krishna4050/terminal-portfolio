@@ -3,10 +3,41 @@
 import { supabase } from "@/utils/supabase";
 import { Resend } from "resend";
 import WelcomeEmail from "@/components/emails/WelcomeEmail";
+import { headers } from "next/headers";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
 const FROM_EMAIL = "Krishna Portfolio <no-reply@krishnaadhikari.com>"; 
+
+// 🌍 NEW: Log Visitor Location
+export async function logVisit() {
+  const headerStore = await headers();
+  
+  // Vercel automatically provides these headers
+  const city = headerStore.get("x-vercel-ip-city") || "Unknown City";
+  const country = headerStore.get("x-vercel-ip-country-region") || "Unknown Country"; // Can vary, sometimes just "x-vercel-ip-country"
+  const countryCode = headerStore.get("x-vercel-ip-country") || "XX";
+
+  // Prevent spam: Simple check to ensure we have real data (or localhost)
+  // We insert even "Unknown" so you can see traffic volume, but you can filter if you want.
+  
+  const { error } = await supabase
+    .from("visits")
+    .insert([{ city, country, country_code: countryCode }]);
+
+  if (error) console.error("Error logging visit:", error);
+}
+
+// 🌍 NEW: Get Recent Visits for 'trace' command
+export async function getRecentVisits() {
+  const { data } = await supabase
+    .from("visits")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(10); // Show last 10 visitors
+
+  return data || [];
+}
 
 export async function submitTestimonial(formData: FormData) {
   const name = formData.get("name") as string;
