@@ -44,7 +44,7 @@ export default function TestimonialsOutput() {
           onClick={() => setShowModal(true)}
           className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold rounded border border-zinc-700 flex items-center gap-2 transition-all"
         >
-          <span className="text-green-400">+</span> Add Recommendation
+          <span className="text-green-400">+</span> Add Comments/Recommendations
         </button>
       </div>
 
