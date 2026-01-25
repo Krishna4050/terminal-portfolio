@@ -261,10 +261,20 @@ export default function Terminal() {
     // playSound("keypress");
   };
   
+  // handleInputFoucus function
+  const handleInputFocus = () => {
+    // Only run on mobile
+    if (window.innerWidth < 768) {
+      // Wait a bit for the keyboard to slide up, then scroll input into view
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+  };
 
   return (
     <div 
-      className="w-full max-w-7xl mx-auto min-h-screen p-4 md:p-8 flex flex-col justify-center cursor-text"
+      className="w-full max-w-7xl mx-auto min-h-screen md:p-8 flex flex-col justify-center cursor-text"
       onClick={handleTerminalClick}
     >
       <div className="bg-black text-green-400 font-mono p-6 md:p-8 rounded-xl shadow-2xl border border-zinc-800 h-[85vh] flex flex-col relative overflow-hidden ring-1 ring-zinc-800/50">
@@ -299,6 +309,23 @@ export default function Terminal() {
           <div ref={bottomRef} />
         </div>
 
+        {/* MOBILE ONLY: Quick Action Bar */}
+      <div className="md:hidden flex gap-2 overflow-x-auto py-2 mb-2 border-t border-zinc-900 no-scrollbar">
+        {['help', 'about', 'projects', 'testimonials', 'contact', 'trace'].map((cmd) => (
+          <button
+            key={cmd}
+            onClick={(e) => {
+              e.stopPropagation(); // Stop clicking background
+              setInput(cmd); // Fill input
+              inputRef.current?.focus(); // Focus input so they can hit enter
+            }}
+            className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-xs text-green-400 whitespace-nowrap active:bg-green-900 transition-colors"
+          >
+            {cmd}
+          </button>
+        ))}
+      </div>
+
         {/* Input Line */}
         <div className="flex items-center mt-4 pt-4 border-t border-zinc-900 shrink-0">
           <span className="mr-3 text-green-500 font-bold text-lg">$</span>
@@ -311,6 +338,7 @@ export default function Terminal() {
             value={input}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onFocus={handleInputFocus}
             autoComplete="off"
             spellCheck="false"
           />
