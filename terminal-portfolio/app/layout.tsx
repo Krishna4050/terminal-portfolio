@@ -16,17 +16,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = "https://krishnaadhikari.com";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: "Krishna Adhikari",
   description: "Backend Developer (Go) | Solution Architect | Network & System Administration",
   keywords: ["Krishna Adhikari", "Solution Architect", "Backend Developer", "Network Engineer", "Golang Developer", "Nepal", "Finland"],
   authors: [{ name: "Krishna Adhikari" }],
   creator: "Krishna Adhikari",
+
+  alternates: {
+    canonical: "/",
+  },
+
   openGraph: {
     title: "Krishna Adhikari | Backend Developer (Go) | Solution Architect | Network & System Administration",
     description: "Explore the professional journey and projects of Krishna Adhikari.",
-    url: "https://krishnaadhikari.com", // 
+    url: BASE_URL, 
     siteName: "Krishna Adhikari",
     images: [
       {
