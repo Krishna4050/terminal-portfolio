@@ -74,7 +74,7 @@ export default function Terminal() {
   // Handles the "Tick" / "Done" button
   const handleBlur = () => {
     // Only on mobile, and only if there is text typed
-    if (window.innerWidth < 768 && input.trim()) {
+    if (input.trim()) {
       handleCommand();
     }
   };
@@ -364,6 +364,7 @@ export default function Terminal() {
           <div className="md:hidden flex gap-2 overflow-x-auto py-2 mb-2 border-t border-zinc-900 no-scrollbar">
             {/* TAB BUTTON */}
             <button
+            type="button"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -378,6 +379,7 @@ export default function Terminal() {
             {/* Existing Quick Commands */}
             {['help', 'projects', 'testimonials', 'trace', 'contact'].map((cmd) => (
               <button
+              type="button"
                 key={cmd}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -395,13 +397,15 @@ export default function Terminal() {
           <form 
             className="flex items-center w-full" 
             onSubmit={handleSubmit}
+            action="."      //  Forces iOS to show "Go"
+            noValidate      //  Prevents validation errors
           >
             <span className="mr-3 text-green-500 font-bold text-lg">$</span>
             <input
               ref={inputRef}
               disabled={isBooting}
               className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
-              type="text"
+              type="search"
               value={input}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
