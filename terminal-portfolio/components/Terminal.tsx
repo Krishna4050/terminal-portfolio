@@ -65,6 +65,20 @@ export default function Terminal() {
   const [isBooting, setIsBooting] = useState(true);
   const [lines, setLines] = useState<string[]>([]);
 
+  //  Handles Form Submission (Enter/Go key)
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Stop page reload
+    handleCommand();    // Run the command
+  };
+
+  // Handles the "Tick" / "Done" button
+  const handleBlur = () => {
+    // Only on mobile, and only if there is text typed
+    if (window.innerWidth < 768 && input.trim()) {
+      handleCommand();
+    }
+  };
+
 
   {/* SOUND CONTEXT USAGE */}
   const { playSound } = useSound();
@@ -378,7 +392,10 @@ export default function Terminal() {
           </div>
 
           {/* INPUT LINE */}
-          <div className="flex items-center">
+          <form 
+            className="flex items-center w-full" 
+            onSubmit={handleSubmit}
+          >
             <span className="mr-3 text-green-500 font-bold text-lg">$</span>
             <input
               ref={inputRef}
@@ -389,10 +406,18 @@ export default function Terminal() {
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               onFocus={handleInputFocus}
+              
+              //  Auto-submit when they click the "Tick" (Done) button
+              onBlur={handleBlur} 
+              
+              //  Changes the blue keyboard button to say "Go"
+              enterKeyHint="go"   
+              
               autoComplete="off"
               spellCheck="false"
             />
-          </div>
+          </form>
+
         </div>
 
       </div>
