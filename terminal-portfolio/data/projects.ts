@@ -74,7 +74,7 @@ export const projects: Project[] = [
     {
     id: 2,
     title: "Enterprise Network Redesign for Reliability and Security",
-    role: "Network Architect", 
+    role: "Solution Architect", 
     tags: ["Cisco", "Fortinet", "Network Design", "Security"],
     shortDesc: "I worked with a mid-sized enterprise that was struggling with frequent network issues due to an outdated flat network design.",
     
@@ -127,7 +127,7 @@ export const projects: Project[] = [
   {
     id: 3,
     title: "Strengthening Enterprise Security with NGFW Migration",
-    role: "Security Engineer",
+    role: "Solution Architect",
     tags: ["Fortinet & Palo Alto", "Sophos Endpoint", "SSL-VPN", "Cybersecurity"],
     shortDesc: "The client was using legacy firewalls that could only filter traffic at a basic level. As more employees started working remotely, security risks increased and the IT team had very limited visibility into what was happening on the networkespecially encrypted traffic.",
     
