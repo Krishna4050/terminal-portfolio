@@ -9,7 +9,7 @@ type Testimonial = {
   name: string;
   role: string;
   message: string;
-  linkedin?: string; // Add optional linkedin field
+  linkedin?: string; 
 };
 
 export default function TestimonialsOutput() {

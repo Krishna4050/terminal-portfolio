@@ -2,12 +2,14 @@
 
 import { useState, useRef, useEffect, ReactNode } from "react";
 import { runCommand, COMMANDS, CommandOutput } from "../utils/commands";
-{/*import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";*/}
 import { runBootSequence } from "@/utils/bootSequence";
 import { logVisit } from "@/app/actions";
 import { useSound } from "@/context/SoundContext";
+import { verifySudoCredentials, checkAdminSession, logoutAdmin  } from "@/app/actions/auth";
+import AdminDashboard from "./AdminDashboard";
 
-// 1. Define the Centered Welcome Banner
+
+// Define the Centered Welcome Banner
 const WELCOME_MESSAGE = (
   <div className="my-10 flex flex-col items-center justify-center text-center w-full">
     {/* ASCII Art - Centered */}
@@ -64,6 +66,11 @@ export default function Terminal() {
 
   const [isBooting, setIsBooting] = useState(true);
   const [lines, setLines] = useState<string[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  // Track which step of the login we are on
+  const [inputMode, setInputMode] = useState<"command" | "username" | "password">("command");
+  // Store the username temporarily while we wait for the password
+  const [tempUsername, setTempUsername] = useState("");
 
   //  Handles Form Submission (Enter/Go key)
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,6 +95,24 @@ export default function Terminal() {
       bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }, 10);
   }, [history, lines]);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const isAuth = await checkAdminSession();
+        if (isAuth) {
+          setIsAdmin(true);
+          setHistory((prev) => [
+            ...prev,
+            { command: "", type: "text", output: "🔄 Session restored: Admin access active." }
+          ]);
+        }
+      } catch (error) {
+        console.error("Session check failed", error);
+      }
+    }
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     // Fire and forget - we don't need to wait for the result
@@ -155,10 +180,137 @@ export default function Terminal() {
     }, 15);
   };
 
-  const handleCommand = () => {
+  const handleCommand = async () => {
     if (!input.trim()) return;
 
+    // username mode:
+    if (inputMode === "username") {
+      const userAttempt = input.trim();
+      setTempUsername(userAttempt); // Save it for the next step
+      
+      setHistory((prev) => [
+        ...prev, 
+        { command: userAttempt, type: "text", output: `Password for ${userAttempt}:` }
+      ]);
+      
+      setInput("");
+      setInputMode("password"); // Move to next step
+      return;
+    }
+
+    //password mode:
+    if (inputMode === "password") {
+      const passAttempt = input.trim();
+      setInput(""); // Clear immediately
+      
+      setHistory((prev) => [
+        ...prev, 
+        { command: "*****", type: "text", output: "Verifying credentials..." }
+      ]);
+
+      // Call Server Action with BOTH username and password
+      const result = await verifySudoCredentials(tempUsername, passAttempt);
+
+      if (result.success) {
+        setIsAdmin(true);
+        setInputMode("command");
+        playSound("enter");
+        setHistory((prev) => [
+          ...prev, 
+          { 
+            command: "", 
+            type: "text", 
+            output: `✅ ACCESS GRANTED. Welcome back, ${tempUsername}.` 
+          }
+        ]);
+      } else {
+        setInputMode("command");
+        // playSound("error"); 
+        setHistory((prev) => [
+          ...prev, 
+          { 
+            command: "", 
+            type: "text", 
+            output: "❌ ACCESS DENIED. Incorrect username or password." 
+          }
+        ]);
+      }
+      return;
+    }
+
+    // NORMAL COMMAND MODE
+
     const command = input.trim();
+
+    // Check for 'sudo' trigger
+    if (command.toLowerCase() === "sudo") {
+      if (isAdmin) {
+        setHistory((prev) => [...prev, { command: "sudo", type: "text", output: "You are already root." }]);
+        setInput("");
+        return;
+      }
+      
+      // Start the Login Flow
+      setHistory((prev) => [...prev, { command: "sudo", type: "text", output: "User:" }]);
+      setInputMode("username"); // Switch to username mode
+      setInput("");
+      return;
+    }
+
+    // Check for 'logout' command
+    if (command.toLowerCase() === "logout" && isAdmin) {
+       // You'll need to import logoutAdmin from actions
+       // await logoutAdmin(); 
+       setIsAdmin(false);
+       setHistory((prev) => [...prev, { command: "logout", type: "text", output: "Logged out successfully." }]);
+       setInput("");
+       return;
+    }
+
+    // --- ADMIN COMMANDS ---
+    if (isAdmin) {
+      // 1. DASHBOARD Command
+      if (command.toLowerCase() === "dashboard" || command.toLowerCase() === "admin") {
+        setHistory((prev) => [
+          ...prev, 
+          { command: "dashboard", type: "component", output: <AdminDashboard /> } 
+        ]);
+        setInput("");
+        return;
+      }
+
+      // 2. APPROVE Command (Command Line Interface)
+      if (command.toLowerCase().startsWith("approve ")) {
+        const id = command.split(" ")[1];
+        setHistory((prev) => [
+          ...prev,
+          { command: command, type: "text", output: `✅ Testimonial #${id} has been APPROVED.` }
+        ]);
+        setInput("");
+        // NOTE: Later we will connect this to the database to actually update it!
+        return;
+      }
+    }
+
+    if ((command.toLowerCase() === "logout" || command.toLowerCase() === "exit") && isAdmin) {
+       
+       // 👇 1. Call the Server Action to delete cookie
+       await logoutAdmin(); 
+       
+       // 👇 2. Update Local State
+       setIsAdmin(false);
+       
+       // 👇 3. Feedback to user
+       setHistory((prev) => [
+         ...prev, 
+         { command: "logout", type: "text", output: "🔒 Logged out. Root privileges dropped." }
+       ]);
+       
+       setInput("");
+       return;
+    }
+
+
     const result: CommandOutput = runCommand(command);
 
     setCommandHistory((prev) => [...prev, command]);
@@ -402,12 +554,14 @@ export default function Terminal() {
             action="."      //  Forces iOS to show "Go"
             noValidate      //  Prevents validation errors
           >
-            <span className="mr-3 text-green-500 font-bold text-lg">$</span>
+            <span className={`mr-3 font-bold text-lg ${isAdmin ? "text-red-500" : "text-green-500"}`}>
+              {isAdmin ? "#" : "$"}
+            </span>
             <input
               ref={inputRef}
               disabled={isBooting}
               className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
-              type="search"
+              type={inputMode === "password" ? "password" : "search"} // Only mask password step
               value={input}
               onChange={handleChange}
               onKeyDown={handleKeyDown}

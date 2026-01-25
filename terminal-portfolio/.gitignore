@@ -43,3 +43,6 @@ next-env.d.ts
 # local env files (CRITICAL SECURITY)
 .env*.local
 .env
+
+generateHash.js
+Testimonials.tsx
