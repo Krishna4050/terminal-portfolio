@@ -1,9 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { projects, Project } from "../data/projects";
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // 2. Insert this useEffect Hook
+  // This locks the background scroll when the modal is open
+  useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedProject]);
 
   return (
     <div className="w-full max-w-6xl my-8 px-4">
@@ -54,13 +67,13 @@ const Projects = () => {
       </div>
 
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center md:p-8 bg-black/80 backdrop-blur-sm animate-fade-in">
           <div 
-            className="bg-zinc-950 border border-zinc-800 w-full max-w-6xl h-full md:h-auto md:max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-zinc-700/50"
+            className="bg-zinc-950 w-full max-w-6xl h-full md:h-auto md:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden border-none md:border border-zinc-800 rounded-none md:rounded-2xl ring-0 md:ring-1 ring-zinc-700/50"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800 bg-zinc-900/50">
+            <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur shrink-0">
               <div>
                 <div className="flex items-center gap-3 mb-1">
                   <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-full border border-blue-500/20">
