@@ -365,6 +365,7 @@ export default function Terminal() {
             {/* TAB BUTTON */}
             <button
             type="button"
+            onMouseDown={(e) => e.preventDefault()}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -380,6 +381,7 @@ export default function Terminal() {
             {['help', 'projects', 'testimonials', 'trace', 'contact'].map((cmd) => (
               <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
                 key={cmd}
                 onClick={(e) => {
                   e.stopPropagation();
