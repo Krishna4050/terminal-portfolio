@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
+import { SoundProvider } from "@/context/SoundContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,11 +58,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SoundProvider>
         <JsonLd />
         {children}
 
         {/* 2. ADD COMPONENT HERE */}
         <Analytics />
+        </SoundProvider>
       </body>
     </html>
   );

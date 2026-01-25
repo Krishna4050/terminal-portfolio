@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect, ReactNode } from "react";
 import { runCommand, COMMANDS, CommandOutput } from "../utils/commands";
-import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";
+{/*import { playKeySound, playEnterSound, loadSoundPreference } from "../utils/sound";*/}
 import { runBootSequence } from "@/utils/bootSequence";
 import { logVisit } from "@/app/actions";
+import { useSound } from "@/context/SoundContext";
 
 // 1. Define the Centered Welcome Banner
 const WELCOME_MESSAGE = (
@@ -64,6 +65,10 @@ export default function Terminal() {
   const [isBooting, setIsBooting] = useState(true);
   const [lines, setLines] = useState<string[]>([]);
 
+
+  {/* SOUND CONTEXT USAGE */}
+  const { playSound } = useSound();
+
   useEffect(() => {
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -82,9 +87,9 @@ export default function Terminal() {
     }
   }, [isBooting]);
 
-  useEffect(() => {
+  {/*useEffect(() => {
     loadSoundPreference();
-  }, []);
+  }, []); */}
 
   useEffect(() => {
     async function boot() {
@@ -189,10 +194,15 @@ export default function Terminal() {
     setInput("");
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    playSound("keypress"); // Plays sound when typing (if enabled)
+    setInput(e.target.value);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      playEnterSound();
-      handleCommand();
+      playSound("enter"); // ✅ Uses Context
+      handleCommand();    // Call the command handler
       return;
     }
 
@@ -229,7 +239,7 @@ export default function Terminal() {
       const idx = historyIndex === null ? commandHistory.length - 1 : Math.max(historyIndex - 1, 0);
       setHistoryIndex(idx);
       setInput(commandHistory[idx]);
-      playKeySound();
+      playSound("keypress");
       return;
     }
 
@@ -244,12 +254,13 @@ export default function Terminal() {
         setHistoryIndex(idx);
         setInput(commandHistory[idx]);
       }
-      playKeySound();
+      playSound("keypress");
       return;
     }
 
-    playKeySound();
+    // playSound("keypress");
   };
+  
 
   return (
     <div 
@@ -298,7 +309,7 @@ export default function Terminal() {
             className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             autoComplete="off"
             spellCheck="false"

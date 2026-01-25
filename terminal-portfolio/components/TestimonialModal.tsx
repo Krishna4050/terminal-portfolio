@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { submitTestimonial } from "@/app/actions";
+
 
 interface Props {
   onClose: () => void;
@@ -32,6 +33,17 @@ export default function TestimonialModal({ onClose }: Props) {
     email: "",
     linkedin: ""
   });
+
+  useEffect(() => {
+    // This function runs when the component UNMOUNTS (Closes)
+    return () => {
+      // Find the main terminal input and focus it
+      const terminalInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+      if (terminalInput) {
+        terminalInput.focus();
+      }
+    };
+  }, []);
 
   // ⚡ HELPER: Validate a single field
   const validateField = (name: string, value: string) => {
