@@ -199,6 +199,26 @@ export default function Terminal() {
     setInput(e.target.value);
   };
 
+  const handleTabCompletion = () => {
+    if (!input) return;
+
+    let matches = tabMatches;
+    if (matches.length === 0) {
+      matches = COMMANDS.filter((cmd) => cmd.startsWith(input.toLowerCase()));
+    }
+    if (matches.length === 0) return;
+
+    if (tabMatches.length === 0) {
+      setTabMatches(matches);
+      setTabIndex(0);
+      setInput(matches[0]);
+    } else {
+      const nextIndex = (tabIndex + 1) % matches.length;
+      setTabIndex(nextIndex);
+      setInput(matches[nextIndex]);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       playSound("enter"); // ✅ Uses Context
@@ -208,6 +228,7 @@ export default function Terminal() {
 
     if (e.key === "Tab") {
       e.preventDefault();
+      handleTabCompletion();
       if (!input) return;
 
       let matches = tabMatches;
@@ -274,75 +295,106 @@ export default function Terminal() {
 
   return (
     <div 
-      className="w-full max-w-7xl mx-auto min-h-screen md:p-8 flex flex-col justify-center cursor-text"
+      className="w-full max-w-7xl mx-auto md:min-h-screen md:p-8 flex flex-col justify-center"
       onClick={handleTerminalClick}
     >
-      <div className="bg-black text-green-400 font-mono p-6 md:p-8 rounded-xl shadow-2xl border border-zinc-800 h-[85vh] flex flex-col relative overflow-hidden ring-1 ring-zinc-800/50">
+      {/* LAYOUT EXPLANATION:
+         1. fixed inset-0: Forces full screen on mobile (covers borders/status bars).
+         2. md:relative: Returns to normal box layout on Desktop.
+         3. flex flex-col: Allows us to split History (Top) and Input (Bottom).
+      */}
+      <div className="fixed inset-0 z-50 md:relative md:inset-auto md:z-auto bg-black text-green-400 font-mono shadow-2xl md:border border-zinc-800 md:h-[85vh] md:rounded-xl flex flex-col overflow-hidden md:ring-1 ring-zinc-800/50">
         
-        {/* Boot Text */}
-        <div className="mb-2 space-y-1 whitespace-pre-wrap shrink-0">
-          {lines.map((line, i) => <div key={i}>{line}</div>)}
+        {/* -------------------------------------------------- */}
+        {/* SECTION 1: SCROLLABLE HISTORY (Takes all space)    */}
+        {/* -------------------------------------------------- */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 pb-0">
+          
+          {/* Boot Text */}
+          <div className="mb-2 space-y-1 whitespace-pre-wrap shrink-0">
+            {lines.map((line, i) => <div key={i}>{line}</div>)}
+          </div>
+
+          {/* Output History */}
+          <div className="space-y-4">
+            {history.map((item, index) => (
+              <div key={index} className="wrap-break-words">
+                {item.command && (
+                  <div className="flex items-center mb-1">
+                    <span className="mr-3 text-green-500 font-bold">$</span>
+                    <span className="text-white font-bold">{item.command}</span>
+                  </div>
+                )}
+                
+                {item.type === "component" ? (
+                  <div className="animate-fade-in-up my-4">{item.output}</div>
+                ) : (
+                  <div className="whitespace-pre-wrap text-green-300 leading-relaxed">
+                    {item.output as string}
+                  </div>
+                )}
+              </div>
+            ))}
+            {/* The invisible div is now at the end of the scrollable area */}
+            <div ref={bottomRef} />
+          </div>
         </div>
 
-        {/* Output History - Scrollable Area */}
-        <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
-          {history.map((item, index) => (
-            <div key={index} className="wrap-break-words">
-              {item.command && (
-                <div className="flex items-center mb-1">
-                  <span className="mr-3 text-green-500 font-bold">$</span>
-                  <span className="text-white font-bold">{item.command}</span>
-                </div>
-              )}
-              
-              {item.type === "component" ? (
-                <div className="animate-fade-in-up my-4">
-                  {item.output}
-                </div>
-              ) : (
-                <div className="whitespace-pre-wrap text-green-300 leading-relaxed">
-                  {item.output as string}
-                </div>
-              )}
-            </div>
-          ))}
-          <div ref={bottomRef} />
+
+        {/* -------------------------------------------------- */}
+        {/* SECTION 2: FIXED INPUT AREA (Stays at bottom)      */}
+        {/* -------------------------------------------------- */}
+        <div className="shrink-0 p-4 md:p-8 pt-2 bg-black z-10">
+          
+          {/* MOBILE TOOLBAR (With TAB Button) */}
+          <div className="md:hidden flex gap-2 overflow-x-auto py-2 mb-2 border-t border-zinc-900 no-scrollbar">
+            {/* TAB BUTTON */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleTabCompletion(); // Trigger Tab Logic
+                inputRef.current?.focus();
+              }}
+              className="px-3 py-1 bg-green-900/30 border border-green-500/50 rounded text-xs text-green-400 font-bold whitespace-nowrap active:bg-green-500 active:text-black transition-colors"
+            >
+              ↹ TAB
+            </button>
+
+            {/* Existing Quick Commands */}
+            {['help', 'projects', 'testimonials', 'trace', 'contact'].map((cmd) => (
+              <button
+                key={cmd}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setInput(cmd);
+                  inputRef.current?.focus();
+                }}
+                className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-xs text-green-400 whitespace-nowrap active:bg-green-900 transition-colors"
+              >
+                {cmd}
+              </button>
+            ))}
+          </div>
+
+          {/* INPUT LINE */}
+          <div className="flex items-center">
+            <span className="mr-3 text-green-500 font-bold text-lg">$</span>
+            <input
+              ref={inputRef}
+              disabled={isBooting}
+              className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
+              type="text"
+              value={input}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              onFocus={handleInputFocus}
+              autoComplete="off"
+              spellCheck="false"
+            />
+          </div>
         </div>
 
-        {/* MOBILE ONLY: Quick Action Bar */}
-      <div className="md:hidden flex gap-2 overflow-x-auto py-2 mb-2 border-t border-zinc-900 no-scrollbar">
-        {['help', 'about', 'projects', 'testimonials', 'contact', 'trace'].map((cmd) => (
-          <button
-            key={cmd}
-            onClick={(e) => {
-              e.stopPropagation(); // Stop clicking background
-              setInput(cmd); // Fill input
-              inputRef.current?.focus(); // Focus input so they can hit enter
-            }}
-            className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-xs text-green-400 whitespace-nowrap active:bg-green-900 transition-colors"
-          >
-            {cmd}
-          </button>
-        ))}
-      </div>
-
-        {/* Input Line */}
-        <div className="flex items-center mt-4 pt-4 border-t border-zinc-900 shrink-0">
-          <span className="mr-3 text-green-500 font-bold text-lg">$</span>
-          <input
-            ref={inputRef}
-            disabled={isBooting}
-            // MOBILE FIX 4: Removed autoFocus attribute (handled via useEffect now)
-            className={`flex-1 bg-black outline-none text-green-400 caret-green-400 text-lg ${isBooting ? "opacity-50" : ""}`}
-            type="text"
-            value={input}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            onFocus={handleInputFocus}
-            autoComplete="off"
-            spellCheck="false"
-          />
-        </div>
       </div>
     </div>
   );
