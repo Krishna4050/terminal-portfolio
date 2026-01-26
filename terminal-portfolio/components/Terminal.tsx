@@ -76,16 +76,16 @@ export default function Terminal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Stop page reload
     handleCommand();    // Run the command
-    handleCommand();    // Run the command
+    // handleCommand();    // Run the command
   };
 
   // Handles the "Tick" / "Done" button
-  const handleBlur = () => {
-    // Only on mobile, and only if there is text typed
-    if (input.trim()) {
-      handleCommand();
-    }
-  };
+  // const handleBlur = () => {
+  //   // Only on mobile, and only if there is text typed
+  //   if (input.trim()) {
+  //     handleCommand();
+  //   }
+  // };
 
 
   {/* SOUND CONTEXT USAGE */}
@@ -569,7 +569,7 @@ export default function Terminal() {
               onFocus={handleInputFocus}
               
               //  Auto-submit when they click the "Tick" (Done) button
-              onBlur={handleBlur} 
+              // onBlur={handleBlur} 
               
               //  Changes the blue keyboard button to say "Go"
               enterKeyHint="go"   
