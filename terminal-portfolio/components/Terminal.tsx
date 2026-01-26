@@ -76,6 +76,7 @@ export default function Terminal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Stop page reload
     handleCommand();    // Run the command
+    handleCommand();    // Run the command
   };
 
   // Handles the "Tick" / "Done" button
@@ -386,11 +387,11 @@ export default function Terminal() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      playSound("enter"); // ✅ Uses Context
-      handleCommand();    // Call the command handler
-      return;
-    }
+    // if (e.key === "Enter") {
+    //   playSound("enter"); // ✅ Uses Context
+    //   handleCommand();    // Call the command handler
+    //   return;
+    // }
 
     if (e.key === "Tab") {
       e.preventDefault();
